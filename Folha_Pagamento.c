@@ -7,8 +7,8 @@
 
 //Registro de funcionarios
 typedef struct Funcionario {
-  int matricula;
-  int salBruto;
+  char matricula[9];
+  float salBruto;
   char nome[TAM_NOME], dataNascimento[TAM_DNASC];
 }Funcionario;
 
