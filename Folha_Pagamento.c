@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 //Constantes
 #define MAX_FUNCS 20
@@ -13,9 +14,10 @@ typedef struct Funcionario {
   char matricula[TAM_MATRICULA];
   float salBruto;
   char nome[TAM_NOME], dataNascimento[TAM_DNASC];
-}Funcionario;
+} Funcionario;
 
 //Assinatura das funções
+//Função que inclui um funcionário ao vetor de funcionários
 void incluirFuncionario(Funcionario *vetor) {
   //Declaração de um funcionário auxiliar
   Funcionario func;
@@ -82,12 +84,53 @@ void incluirFuncionario(Funcionario *vetor) {
 
 }
 
+//Função que realiza consulta de um funcionário no vetor de funcionários
+void consultarFuncionario(Funcionario *vetor) {
+  Funcionario func;
+  char opcao;
+
+  //system("cls");
+  puts("Digite a matrícula do Funcionário a ser consultado:");
+  do {
+    printf(">");
+    gets(func.matricula);
+    setbuf(stdin, NULL);
+
+    for (int i = 0; i < MAX_FUNCS; i++) {
+      if (!strcmp(func.matricula, vetor[i].matricula)) {
+        printf("\n--- Dados do Funcionário ---\n");
+        printf("Funcionário: %d\n", i+1);
+        printf("Matrícula: %s\n", vetor[i].matricula);
+        printf("Nome: %s\n", vetor[i].nome);
+        printf("Data de Nascimento: %s\n", vetor[i].dataNascimento);
+        printf("Salário Bruto: %.2f\n", vetor[i].salBruto);
+
+        getchar();
+        return;
+      }
+    }
+
+    printf("\nFuncionário não encontrado! Deseja procurar novamente? (S/N)\n> ");
+    scanf("%c", &opcao);
+    setbuf(stdin, NULL);
+    toupper(opcao);
+
+  } while(opcao == 'S');
+
+
+}
+
 //Função Principal
 int main() {
 
   //Declaração de Variáveis
   Funcionario funcionarios[MAX_FUNCS];
   int opcao;
+
+  strcpy(funcionarios[2].matricula, "123");
+  strcpy(funcionarios[2].nome, "João Pedro");
+  strcpy(funcionarios[2].dataNascimento, "25/01/1997");
+  funcionarios[2].salBruto = 50;
 
   //Menu Inicial
   while (1) {
@@ -109,7 +152,7 @@ int main() {
           //excluirFuncionario();
           break;
         case 3:
-          //consultarFuncionario();
+          consultarFuncionario(funcionarios);
           break;
         case 4:
           //processarAumento();
@@ -125,7 +168,6 @@ int main() {
       }
     } while(opcao < 1 || opcao > 6);
 
-    break;
   }
 
   return 0;
