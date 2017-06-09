@@ -14,6 +14,7 @@ typedef struct Funcionario {
   char matricula[TAM_MATRICULA];
   float salBruto;
   char nome[TAM_NOME], dataNascimento[TAM_DNASC];
+  int preenchido;
 } Funcionario;
 
 //Assinatura das funções
@@ -69,19 +70,83 @@ void incluirFuncionario(Funcionario *vetor) {
 
   //Busca o último elemento preenchido do vetor
   int i=0;
-  while(vetor[i].matricula[0] != '\0')
-    i++;
+  for (int j = 0; j < MAX_FUNCS; j++)
+    if (vetor[i].preenchido != 0)
+      i++;
 
   //Inserção dos dados coletados no vetor de funcionários
   strcpy(vetor[i].matricula, func.matricula);
   strcpy(vetor[i].nome, func.nome);
   strcpy(vetor[i].dataNascimento, func.dataNascimento);
   vetor[i].salBruto = func.salBruto;
+  vetor[i].preenchido = 1;
 
   //Conclusão da inserção
   puts("\nNovo funcionário adicionado!");
   getchar();
 
+}
+
+//Função que remove um funcionário do vetor de funcionários
+void excluirFuncionario(Funcionario *vetor) {
+  Funcionario funcs[MAX_FUNCS];
+  char opcao;
+  int flag;
+
+  //system("cls");
+  do {
+    puts("Digite a matrícula do Funcionário a ser removido:");
+    flag = 0;
+    printf("> ");
+    setbuf(stdin, NULL);
+    scanf("%s", funcs[0].matricula);
+    setbuf(stdin, NULL);
+
+    //Percorre o vetor à procura do funcionário com a matricula digitada acima
+    for (int i = 0; i < MAX_FUNCS; i++) {
+      if (!strcmp(funcs[0].matricula, vetor[i].matricula)) {
+        printf("\nFuncionário %s removido!", vetor[i].nome);
+        vetor[i].preenchido = 0; //Exclusão do funcionário
+        flag = 1;
+      }
+    }
+
+    if (flag) {
+      /*Se encontrar, os dados do vetor de funcionários serão alocados num vetor auxiliar.
+      Essa estratégia serve para tirar quaisquer buracos que fiquem no vetor de funcionarios*/
+      int k=0;
+      for (int j = 0; j < MAX_FUNCS; j++) {
+        if (vetor[j].preenchido == 1) {
+          strcpy(funcs[k].matricula, vetor[j].matricula);
+          strcpy(funcs[k].nome, vetor[j].nome);
+          strcpy(funcs[k].dataNascimento, vetor[j].dataNascimento);
+          funcs[k].salBruto = vetor[j].salBruto;
+          funcs[k].preenchido = vetor[j].preenchido;
+          k++;
+        }
+      }
+
+      /*Reinserção dos elementos do vetor de funcionários. Dessa vez sem o buraco causado pela exclusão
+      do elemento no "For" anterior.*/
+      for (int j = 0; j <= k; j++) {
+        strcpy(vetor[j].matricula, funcs[j].matricula);
+        strcpy(vetor[j].nome, funcs[j].nome);
+        strcpy(vetor[j].dataNascimento, funcs[j].dataNascimento);
+        vetor[j].salBruto = funcs[j].salBruto;
+        vetor[j].preenchido = funcs[j].preenchido;
+      }
+
+      //Remoção concluída
+      getchar();
+      return;
+    }
+
+    printf("\nFuncionário não encontrado! Deseja procurar novamente? (S/N)\n> ");
+    scanf("%c", &opcao);
+    setbuf(stdin, NULL);
+    toupper(opcao);
+
+  } while(opcao == 'S');
 }
 
 //Função que realiza consulta de um funcionário no vetor de funcionários
@@ -120,6 +185,17 @@ void consultarFuncionario(Funcionario *vetor) {
 
 }
 
+//Função que imprime todos os registros de funcionários do vetor
+void imprimirRegistros(Funcionario *vetor) {
+  int i = 0;
+  while (i < MAX_FUNCS) {
+    if (vetor[i].preenchido == 1)
+      printf("\npos: %d Nome: %s", i, vetor[i].nome);
+    i++;
+  }
+  printf("\n\n");
+}
+
 //Função Principal
 int main() {
 
@@ -127,10 +203,39 @@ int main() {
   Funcionario funcionarios[MAX_FUNCS];
   int opcao;
 
+  for (int i = 0; i < MAX_FUNCS; i++) {
+    funcionarios[i].preenchido = 0;
+  }
+
   strcpy(funcionarios[2].matricula, "123");
   strcpy(funcionarios[2].nome, "João Pedro");
   strcpy(funcionarios[2].dataNascimento, "25/01/1997");
   funcionarios[2].salBruto = 50;
+  funcionarios[2].preenchido = 1;
+
+  strcpy(funcionarios[0].matricula, "111");
+  strcpy(funcionarios[0].nome, "Pedro");
+  strcpy(funcionarios[0].dataNascimento, "25/01/1997");
+  funcionarios[0].salBruto = 50;
+  funcionarios[0].preenchido = 1;
+
+  strcpy(funcionarios[1].matricula, "222");
+  strcpy(funcionarios[1].nome, "Jorge");
+  strcpy(funcionarios[1].dataNascimento, "25/01/1997");
+  funcionarios[1].salBruto = 50;
+  funcionarios[1].preenchido = 1;
+
+  strcpy(funcionarios[3].matricula, "333");
+  strcpy(funcionarios[3].nome, "Marcos");
+  strcpy(funcionarios[3].dataNascimento, "25/01/1997");
+  funcionarios[3].salBruto = 50;
+  funcionarios[3].preenchido = 1;
+
+  strcpy(funcionarios[4].matricula, "444");
+  strcpy(funcionarios[4].nome, "Carlos");
+  strcpy(funcionarios[4].dataNascimento, "25/01/1997");
+  funcionarios[4].salBruto = 50;
+  funcionarios[4].preenchido = 1;
 
   //Menu Inicial
   while (1) {
@@ -149,7 +254,7 @@ int main() {
           incluirFuncionario(funcionarios);
           break;
         case 2:
-          //excluirFuncionario();
+          excluirFuncionario(funcionarios);
           break;
         case 3:
           consultarFuncionario(funcionarios);
@@ -161,7 +266,7 @@ int main() {
           //ordernarRegistros();
           break;
         case 6:
-          //imprimirRegistros();
+          imprimirRegistros(funcionarios);
           break;
         default:
           puts("Opção Inválida. Por favor, tente novamente!\n");
