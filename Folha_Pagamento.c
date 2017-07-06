@@ -185,12 +185,21 @@ void consultarFuncionario(Funcionario *vetor) {
 
 }
 
+//Função que aumenta o valor do salário bruto dos funcionários de acordo com um percentual
+void processarAumento(Funcionario *vetor, int percentual) {
+  int i=0;
+  while (vetor[i].preenchido) {
+    vetor[i].salBruto += (vetor[i].salBruto * percentual)/100;
+    i++;
+  }
+}
+
 //Função que imprime todos os registros de funcionários do vetor
 void imprimirRegistros(Funcionario *vetor) {
   int i = 0;
   while (i < MAX_FUNCS) {
     if (vetor[i].preenchido == 1)
-      printf("\npos: %d Nome: %s", i, vetor[i].nome);
+      printf("pos: %d Nome: %s\n", i, vetor[i].nome);
     i++;
   }
   printf("\n\n");
@@ -240,9 +249,9 @@ int main() {
   //Menu Inicial
   while (1) {
     puts("------------ Sistema de Folha sadasdde Pagamento ------------\n");
-    printf("1 - Incluir Funcionário   ");  printf("3 - Consultar Funcionário\n");
+    printf("1 - Incluir Funcionário   ");  printf("4 - Processar Aumento     ");
     printf("2 - Excluir Funcionário   ");  printf("5 - Ordenar Registros\n");
-    printf("4 - Processar Aumento     ");  printf("6 - Imprimir Registros\n\n");
+    printf("3 - Consultar Funcionário\n"); printf("6 - Imprimir Registros\n\n");
 
     do {
       printf("> ");
@@ -260,7 +269,7 @@ int main() {
           consultarFuncionario(funcionarios);
           break;
         case 4:
-          //processarAumento();
+          processarAumento(funcionarios, 20);
           break;
         case 5:
           //ordernarRegistros();
