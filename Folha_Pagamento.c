@@ -70,8 +70,7 @@ void incluirFuncionario(Funcionario *vetor) {
 
   //Busca o último elemento preenchido do vetor
   int i=0;
-  for (int j = 0; j < MAX_FUNCS; j++)
-    if (vetor[i].preenchido != 0)
+  while (vetor[i].preenchido != 0)
       i++;
 
   //Inserção dos dados coletados no vetor de funcionários
@@ -95,7 +94,7 @@ void excluirFuncionario(Funcionario *vetor) {
 
   //system("cls");
   do {
-    puts("Digite a matrícula do Funcionário a ser removido:");
+    puts("\nDigite a matrícula do Funcionário a ser removido:");
     flag = 0;
     printf("> ");
     setbuf(stdin, NULL);
@@ -106,6 +105,7 @@ void excluirFuncionario(Funcionario *vetor) {
     for (int i = 0; i < MAX_FUNCS; i++) {
       if (!strcmp(funcs[0].matricula, vetor[i].matricula)) {
         printf("\nFuncionário %s removido!", vetor[i].nome);
+        strcpy(vetor[i].matricula, "");
         vetor[i].preenchido = 0; //Exclusão do funcionário
         flag = 1;
       }
@@ -114,9 +114,9 @@ void excluirFuncionario(Funcionario *vetor) {
     if (flag) {
       /*Se encontrar, os dados do vetor de funcionários serão alocados num vetor auxiliar.
       Essa estratégia serve para tirar quaisquer buracos que fiquem no vetor de funcionarios*/
-      int k=0;
-      for (int j = 0; j < MAX_FUNCS; j++) {
-        if (vetor[j].preenchido == 1) {
+      int k=0, j=0, buracos=0;
+      while(buracos < 2) { //Apenas um funcionário foi excluído, logo, ao encontrar outros dois campos com preenchido = 0, o laço termina pois está no final do vetor.
+        if (vetor[j].preenchido == 1) { //armazena o funcionário no novo vetor
           strcpy(funcs[k].matricula, vetor[j].matricula);
           strcpy(funcs[k].nome, vetor[j].nome);
           strcpy(funcs[k].dataNascimento, vetor[j].dataNascimento);
@@ -124,16 +124,28 @@ void excluirFuncionario(Funcionario *vetor) {
           funcs[k].preenchido = vetor[j].preenchido;
           k++;
         }
-      }
+        else
+          buracos++;
 
+        j++;
+      }
       /*Reinserção dos elementos do vetor de funcionários. Dessa vez sem o buraco causado pela exclusão
       do elemento no "For" anterior.*/
-      for (int j = 0; j <= k; j++) {
+      j=0;
+      while(funcs[j].preenchido == 1 && j < k) {
         strcpy(vetor[j].matricula, funcs[j].matricula);
         strcpy(vetor[j].nome, funcs[j].nome);
         strcpy(vetor[j].dataNascimento, funcs[j].dataNascimento);
         vetor[j].salBruto = funcs[j].salBruto;
         vetor[j].preenchido = funcs[j].preenchido;
+        j++;
+      }
+
+      //Tira os possíveis lixos de memória das outras posições do vetor para não comprometer as consultas
+      while(j<MAX_FUNCS) {
+        strcpy(vetor[j].matricula, "");
+        vetor[j].preenchido = 0;
+        j++;
       }
 
       //Remoção concluída
@@ -155,15 +167,15 @@ void consultarFuncionario(Funcionario *vetor) {
   char opcao;
 
   //system("cls");
-  puts("Digite a matrícula do Funcionário a ser consultado:");
+  puts("\nDigite a matrícula do Funcionário a ser consultado:");
   do {
-    printf(">");
+    printf("> ");
     gets(func.matricula);
     setbuf(stdin, NULL);
 
     for (int i = 0; i < MAX_FUNCS; i++) {
       if (!strcmp(func.matricula, vetor[i].matricula)) {
-        printf("\n--- Dados do Funcionário ---\n");
+        printf("\n--- Dados do Funcionário ---\n\n");
         printf("Funcionário: %d\n", i+1);
         printf("Matrícula: %s\n", vetor[i].matricula);
         printf("Nome: %s\n", vetor[i].nome);
@@ -186,12 +198,22 @@ void consultarFuncionario(Funcionario *vetor) {
 }
 
 //Função que aumenta o valor do salário bruto dos funcionários de acordo com um percentual
-void processarAumento(Funcionario *vetor, int percentual) {
+void processarAumento(Funcionario *vetor) {
   int i=0;
+  float percentual=0;
+
+  puts("\nDigite o percentual de aumento do salário bruto dos funcionários:");
+  printf("> ");
+  scanf("%f", &percentual);
+  setbuf(stdin, NULL);
+
   while (vetor[i].preenchido) {
     vetor[i].salBruto += (vetor[i].salBruto * percentual)/100;
     i++;
   }
+
+  printf("\nFoi atribuido um aumento de %.1f%% ao salário bruto dos funcionários!\n", percentual);
+  getchar();
 }
 
 //Função de Ordenamento dos Registros dos Funcionários
@@ -202,13 +224,24 @@ void ordenarRegistros(){
 
 //Função que imprime todos os registros de funcionários do vetor
 void imprimirRegistros(Funcionario *vetor) {
+  printf("\n");
+
+  if (!vetor[0].preenchido) {
+    printf("Não existem funcionários cadastrados!\n\n");
+    return;
+  }
+
   int i = 0;
-  while (i < MAX_FUNCS) {
-    if (vetor[i].preenchido == 1)
-      printf("pos: %d Nome: %s\n", i, vetor[i].nome);
+  printf("\n--- Dados dos Funcionários ---\n\n");
+  while (vetor[i].preenchido == 1) {
+    printf("Funcionário: %d\n", i+1);
+    printf("Matrícula: %s\n", vetor[i].matricula);
+    printf("Nome: %s\n", vetor[i].nome);
+    printf("Data de Nascimento: %s\n", vetor[i].dataNascimento);
+    printf("Salário Bruto: %.2f\n\n", vetor[i].salBruto);
     i++;
   }
-  printf("\n\n");
+  getchar();
 }
 
 //Função Principal
@@ -254,10 +287,11 @@ int main() {
 
   //Menu Inicial
   while (1) {
-    puts("------------ Sistema de Folha sadasdde Pagamento ------------\n");
-    printf("1 - Incluir Funcionário   ");  printf("4 - Processar Aumento     ");
-    printf("2 - Excluir Funcionário   ");  printf("5 - Ordenar Registros\n");
-    printf("3 - Consultar Funcionário\n"); printf("6 - Imprimir Registros\n\n");
+    system("cls");
+    puts("------------ Sistema de Folha de Pagamento ------------\n");
+    printf("1 - Incluir Funcionário     ");  printf("4 - Processar Aumento\n");
+    printf("2 - Excluir Funcionário     ");  printf("5 - Ordenar Registros\n");
+    printf("3 - Consultar Funcionário   ");  printf("6 - Imprimir Registros\n\n");
 
     do {
       printf("> ");
@@ -275,7 +309,7 @@ int main() {
           consultarFuncionario(funcionarios);
           break;
         case 4:
-          processarAumento(funcionarios, 20);
+          processarAumento(funcionarios);
           break;
         case 5:
           //ordernarRegistros();
