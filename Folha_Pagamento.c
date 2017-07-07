@@ -28,7 +28,7 @@ void incluirFuncionario(Funcionario *vetor) {
   gets(func.matricula); //Captura a string digitada pelo usuário e atribui à matricula do funcionario auxiliar
   setbuf(stdin, NULL); //Limpa o Buffer do Teclado de forma segura
   //Busca no vetor de funcionários se já existe algum registro com o número de matrícula inserido pelo usuário
-  for (int i = 0; i < MAX_FUNCS; i++) {
+  for (int i = 0; i < MAX_FUNCS ; i++) {
     if (!strcmp(vetor[i].matricula, func.matricula)) {
       puts("ERRO!!! Já existe um registro de funcionário com este número de matrícula!");
       getchar();
@@ -193,6 +193,12 @@ void processarAumento(Funcionario *vetor, int percentual) {
     i++;
   }
 }
+
+//Função de Ordenamento dos Registros dos Funcionários
+void ordenarRegistros(){
+//qualquer coisa
+}
+
 
 //Função que imprime todos os registros de funcionários do vetor
 void imprimirRegistros(Funcionario *vetor) {
